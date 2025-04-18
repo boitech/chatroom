@@ -8,15 +8,14 @@ import Link from "next/link";
 import { useState } from "react";
 
 const AuthForm = () => {
-  const [loading, setLoading] = useState(false);
+  const [loggingWithGoogle, setLoggingWithGoogle] = useState(false);
 
   const handleLoginWithGoogle = () => {
-    setLoading(true);
     const supabase = supabaseClient();
     supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://chatroom-nauh.onrender.com/auth/callback",
+        redirectTo: "https://chatroom-nauh.onrender.com/auth/callback", // fixed redirect here
       },
     });
   };
@@ -28,15 +27,21 @@ const AuthForm = () => {
           🔐 Login using Google
         </h2>
       </div>
+
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <div className="flex flex-col gap-6">
-          {loading ? (
+          {loggingWithGoogle ? (
             <Button disabled>
               Logging In
               <Loader2 className="h-4 w-4 ml-2 animate-spin" />
             </Button>
           ) : (
-            <Button onClick={handleLoginWithGoogle}>
+            <Button
+              onClick={() => {
+                setLoggingWithGoogle(true);
+                handleLoginWithGoogle();
+              }}
+            >
               <Image
                 src="/icons/google.svg"
                 alt="Google Icon"
@@ -48,6 +53,7 @@ const AuthForm = () => {
             </Button>
           )}
         </div>
+
         <p className="mt-10 text-center">
           Go back to{" "}
           <Link
