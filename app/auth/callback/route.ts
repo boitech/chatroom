@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const next = searchParams.get("next") ?? "/";
 
     if (!code) {
-      console.error("No code provided in query params.");
+      console.error("No code in URL");
       return NextResponse.redirect("/auth/auth-code-error");
     }
 
@@ -32,16 +32,18 @@ export async function GET(request: Request) {
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    console.log("exchangeCodeForSession result:", data, error);
 
     if (error) {
-      console.error("Error exchanging code:", error.message);
+      console.error("Supabase exchange error:", error.message);
       return NextResponse.redirect("/auth/auth-code-error");
     }
 
     return NextResponse.redirect(next);
   } catch (err: any) {
-    console.error("Unexpected error in /auth/callback:", err.message);
+    console.error("Unhandled /auth/callback error:", err.message);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
